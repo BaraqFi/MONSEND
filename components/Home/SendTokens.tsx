@@ -1,6 +1,7 @@
 'use client'
 
 import { monadTestnet, publicClient } from '@/lib/viem'
+import { useTheme } from '@/components/theme-provider'
 import { useState, useEffect } from 'react'
 import {
   parseEther,
@@ -71,6 +72,7 @@ const ERC20_ABI = [
 ] as const
 
 export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
+  const { theme } = useTheme()
   const [step, setStep] = useState<'select' | 'send'>('select')
   const [selectedToken, setSelectedToken] = useState<Token | null>(null)
   const [availableTokens, setAvailableTokens] = useState<Token[]>([])
@@ -83,6 +85,11 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
   const [isSuccess, setIsSuccess] = useState(false)
 
   const { address, chainId } = useAccount()
+  
+  const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-[#2c2e30]'
+  const textSecondary = theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+  const borderColor = theme === 'dark' ? 'border-[#7564fb]/30' : 'border-[#7564fb]/20'
   const { data: nativeHash, sendTransaction, isPending: isNativePending } =
     useSendTransaction()
   const {

@@ -1,6 +1,7 @@
 'use client'
 
 import { publicClient } from '@/lib/viem'
+import { useTheme } from '@/components/theme-provider'
 import { useEffect, useState } from 'react'
 import { formatUnits, formatEther, type Address } from 'viem'
 
@@ -51,6 +52,7 @@ interface TokenListProps {
 }
 
 export function TokenList({ address, refreshTrigger }: TokenListProps) {
+  const { theme } = useTheme()
   const [tokens, setTokens] = useState<Token[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -131,10 +133,14 @@ export function TokenList({ address, refreshTrigger }: TokenListProps) {
     return () => clearInterval(interval)
   }, [address, refreshTrigger])
 
+  const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-[#2c2e30]'
+  const textSecondary = theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+
   if (isLoading) {
     return (
       <div className="py-8 text-center">
-        <p className="text-gray-400 text-sm">Loading...</p>
+        <p className={textSecondary + ' text-sm'}>Loading...</p>
       </div>
     )
   }
@@ -144,21 +150,21 @@ export function TokenList({ address, refreshTrigger }: TokenListProps) {
       {tokens.map((token) => (
         <div
           key={token.address}
-          className="flex items-center justify-between p-4 bg-[#1a1a2e] rounded-lg"
+          className={`flex items-center justify-between p-4 ${cardBg} rounded-lg`}
         >
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#7564fb] flex items-center justify-center">
               <span className="text-white font-bold text-lg">
                 {token.symbol.slice(0, 1)}
               </span>
             </div>
             <div>
-              <p className="font-semibold text-white text-lg">{token.symbol}</p>
-              <p className="text-sm text-gray-400">{token.name}</p>
+              <p className={`font-semibold ${textPrimary} text-lg`}>{token.symbol}</p>
+              <p className={`text-sm ${textSecondary}`}>{token.name}</p>
             </div>
           </div>
           <div className="text-right">
-            <p className="font-semibold text-white text-xl">
+            <p className={`font-semibold ${textPrimary} text-xl`}>
               {Number.parseFloat(token.balance).toFixed(6)}
             </p>
           </div>
