@@ -384,7 +384,7 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
                 setVerifiedToken(null)
                 setError(null)
               }}
-              className={`w-full rounded-lg border border-purple-500/30 bg-transparent px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
+              className={`w-full rounded-lg border border-purple-500/30 bg-transparent px-3 py-2 font-mono text-base focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
               disabled={isVerifying}
             />
 
@@ -509,7 +509,7 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             placeholder="0x..."
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            className={`w-full rounded-lg border border-purple-500/30 px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
+            className={`w-full rounded-lg border border-purple-500/30 px-3 py-2 font-mono text-base focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
             disabled={isPending}
           />
         </div>
@@ -525,7 +525,7 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
               placeholder="0.0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className={`w-full rounded-lg border border-purple-500/30 px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
+              className={`w-full rounded-lg border border-purple-500/30 px-3 py-2 font-mono text-base focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
               disabled={isPending}
             />
             {selectedToken && (

@@ -162,7 +162,7 @@ export function Wallet() {
   // Wallet connected and on correct chain
   return (
     <div className={`min-h-screen ${bgColor} ${textPrimary}`}>
-      <div className="mx-auto w-full max-w-md">
+      <div className="w-full">
         {/* Profile Section */}
         <div className="space-y-4 p-6 text-center">
           <div className="mx-auto h-24 w-24 overflow-hidden rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
