@@ -1,33 +1,34 @@
 import { NextResponse } from "next/server";
-import { APP_URL } from "../../../lib/constants";
 
 export async function GET() {
-  const farcasterConfig = {
-    version: "1",
-    name: "Monad Wallet",
-    description: "View and send MON tokens on Monad Testnet",
-    icons: {
-      app: {
-        url: `${APP_URL}/images/icon.png`, // 512x512 PNG in public/images/icon.png
-        background: "#000000",
-      },
-      square: {
-        url: `${APP_URL}/images/icon-square.png`, // Optional 1024x1024 PNG
-        background: "#000000",
-      },
+  const farcasterManifest = {
+    frame: {
+      name: "MONSEND",
+      version: "1",
+      iconUrl: "https://monsend.vercel.app/icon.png",
+      homeUrl: "https://monsend.vercel.app",
+      imageUrl: "https://monsend.vercel.app/image.png",
+      splashImageUrl: "https://monsend.vercel.app/splash.png",
+      splashBackgroundColor: "#fafafb",
+      webhookUrl: "https://monsend.vercel.app/api/webhook",
+      subtitle: "send monad tokens on farcaster",
+      description: "Easily send monad tokens from your farcaster wallet to another wallet",
+      primaryCategory: "finance",
+      tags: [
+        "monad",
+        "send",
+        "tokens",
+        "wallet"
+      ],
+      ogTitle: "MONSEND - Send on Farcaster",
+      ogDescription: "Easily send monad tokens from your farcaster wallet to another wallet"
     },
-    screenshots: [
-      {
-        url: `${APP_URL}/images/screenshot1.png`, // Add to public/images
-        width: 390,
-        height: 844,
-      },
-    ],
-    category: "wallet",
-    appUrl: `${APP_URL}/`,
-    miniappUrl: `${APP_URL}/`,
-    wallets: ["ewi"], // Enables EVM Wallet Integration for Monad
+    accountAssociation: {
+      header: "eyJmaWQiOjMyODE4MSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweGI0Nzk3NzJmMjI5ODkwOTQ5NDcwOTA2YmUxMGIyM0Y3ZjdhRTAwOTEifQ",
+      payload: "eyJkb21haW4iOiJtb25zZW5kLnZlcmNlbC5hcHAifQ",
+      signature: "9UOw2JmIcXgyoFavZT7I1rPA4ec5L2vfOyXBWOsUGJwek/ZJl6tNlNCzZAy37LxVBf1aGn7mv1/Nj8wzmmACnxw="
+    }
   };
 
-  return NextResponse.json(farcasterConfig);
+  return NextResponse.json(farcasterManifest);
 }
