@@ -5,7 +5,11 @@ import { useState } from 'react'
 import { parseEther, type Address, isAddress } from 'viem'
 import { useSendTransaction, useSwitchChain, useAccount } from 'wagmi'
 
-export function SendTokens() {
+interface SendTokensProps {
+  onTransactionSuccess?: () => void
+}
+
+export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
   const [recipient, setRecipient] = useState('')
   const [amount, setAmount] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -56,6 +60,8 @@ export function SendTokens() {
             setIsSuccess(true)
             setRecipient('')
             setAmount('')
+            // Trigger balance refresh
+            onTransactionSuccess?.()
           },
           onError: (err) => {
             setError(`Transaction failed: ${err.message}`)
