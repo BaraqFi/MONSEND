@@ -4,7 +4,6 @@ import { useFrame } from '@/components/farcaster-provider'
 import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector'
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 import { monadTestnet } from '@/lib/viem'
-import { WalletBalance } from './WalletBalance'
 import { SendTokens } from './SendTokens'
 import { TokenList } from './TokenList'
 import { NFTList } from './NFTList'
@@ -157,10 +156,6 @@ export function Wallet() {
           </div>
         </div>
 
-        {/* Balance Display */}
-        {address && (
-          <WalletBalance address={address} refreshTrigger={balanceRefreshTrigger} />
-        )}
 
         {/* Action Buttons */}
         <div className="px-6 py-4">
@@ -240,19 +235,7 @@ export function Wallet() {
         {/* Tab Content */}
         <div className="p-4 min-h-[300px]">
           {activeTab === 'coins' && address && (
-            <div className="space-y-4">
-              <div className="text-center py-8 space-y-2">
-                <p className="text-gray-400 text-sm">Native Token</p>
-                <p className="text-2xl font-bold text-white">MON (Monad)</p>
-                <p className="text-sm text-gray-500">
-                  Balance displayed above
-                </p>
-              </div>
-              
-              <div className="border-t border-purple-500/20 pt-4">
-                <TokenList address={address} />
-              </div>
-            </div>
+            <TokenList address={address} refreshTrigger={balanceRefreshTrigger} />
           )}
 
           {activeTab === 'nfts' && address && <NFTList address={address} />}
