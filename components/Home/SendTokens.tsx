@@ -1,21 +1,23 @@
 'use client'
 
-import { monadTestnet, publicClient } from '@/lib/viem'
-import { useTheme } from '@/components/theme-provider'
-import { useState, useEffect } from 'react'
+import { ArrowLeft, CheckCircle, CircleDollarSign } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import {
+  isAddress,
   parseEther,
   parseUnits,
-  formatUnits,
   type Address,
-  isAddress,
+  formatUnits,
 } from 'viem'
 import {
+  useAccount,
   useSendTransaction,
   useSwitchChain,
-  useAccount,
   useWriteContract,
 } from 'wagmi'
+
+import { useTheme } from '@/components/theme-provider'
+import { monadTestnet, publicClient } from '@/lib/viem'
 
 interface SendTokensProps {
   onTransactionSuccess?: () => void
@@ -85,18 +87,18 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
   const [isSuccess, setIsSuccess] = useState(false)
 
   const { address, chainId } = useAccount()
-  
+
   const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
-  const textPrimary = theme === 'dark' ? 'text-white' : 'text-[#2c2e30]'
-  const textSecondary = theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-  const borderColor = theme === 'dark' ? 'border-[#7564fb]/30' : 'border-[#7564fb]/20'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-gray-900'
+  const textSecondary =
+    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+  const inputBg = theme === 'dark' ? 'bg-[#16162e]' : 'bg-gray-100'
+  const accentColor = '#9333ea' // Purple 600
+
   const { data: nativeHash, sendTransaction, isPending: isNativePending } =
     useSendTransaction()
-  const {
-    data: erc20Hash,
-    writeContract,
-    isPending: isErc20Pending,
-  } = useWriteContract()
+  const { data: erc20Hash, writeContract, isPending: isErc20Pending } =
+    useWriteContract()
   const { switchChain } = useSwitchChain()
 
   const isPending = isNativePending || isErc20Pending
@@ -231,7 +233,9 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
         setError('You have zero balance of this token')
       }
     } catch (err) {
-      setError('Failed to verify token. Make sure it\'s a valid ERC-20 token.')
+      setError(
+        "Failed to verify token. Make sure it's a valid ERC-20 token."
+      )
       console.error('Token verification error:', err)
     } finally {
       setIsVerifying(false)
@@ -292,7 +296,7 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             onError: (err) => {
               setError(`Transaction failed: ${err.message}`)
             },
-          },
+          }
         )
       } else {
         // Send ERC-20 token
@@ -315,7 +319,7 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             onError: (err) => {
               setError(`Transaction failed: ${err.message}`)
             },
-          },
+          }
         )
       }
     } catch (err: any) {
@@ -327,12 +331,10 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
   if (step === 'select') {
     return (
       <div className="space-y-4">
-        <h2 className="text-xl font-bold">Select Token to Send</h2>
-
         {/* Available Tokens List */}
         {availableTokens.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm text-gray-400">Your Tokens</p>
+            <p className={`text-sm ${textSecondary}`}>Your Tokens</p>
             {availableTokens.map((token) => (
               <button
                 type="button"
@@ -342,24 +344,27 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
                   setStep('send')
                   setError(null)
                 }}
-                className="w-full flex items-center justify-between p-4 bg-[#1a1a2e] rounded-lg hover:bg-[#252541] transition-colors text-left"
+                className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors text-left ${cardBg} hover:bg-purple-600/10`}
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
-                      {token.symbol.slice(0, 2)}
-                    </span>
+                  <div
+                    className="flex h-10 w-10 items-center justify-center rounded-full"
+                    style={{ backgroundColor: accentColor }}
+                  >
+                    <CircleDollarSign className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white">{token.symbol}</p>
-                    <p className="text-xs text-gray-400">{token.name}</p>
+                    <p className={`font-semibold ${textPrimary}`}>
+                      {token.symbol}
+                    </p>
+                    <p className={`text-xs ${textSecondary}`}>{token.name}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-white">
+                  <p className={`font-semibold ${textPrimary}`}>
                     {Number.parseFloat(token.balance).toFixed(4)}
                   </p>
-                  <p className="text-xs text-gray-400">{token.symbol}</p>
+                  <p className={`text-xs ${textSecondary}`}>{token.symbol}</p>
                 </div>
               </button>
             ))}
@@ -367,8 +372,8 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
         )}
 
         {/* Custom Token Address Input */}
-        <div className="border-t border-purple-500/20 pt-4 space-y-3">
-          <p className="text-sm text-gray-400">Or enter token address</p>
+        <div className="space-y-3 border-t border-purple-500/20 pt-4">
+          <p className={`text-sm ${textSecondary}`}>Or enter token address</p>
           <div className="space-y-2">
             <input
               type="text"
@@ -379,20 +384,21 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
                 setVerifiedToken(null)
                 setError(null)
               }}
-              className="w-full px-3 py-2 bg-[#1a1a2e] text-white border border-purple-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+              className={`w-full rounded-lg border border-purple-500/30 bg-transparent px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
               disabled={isVerifying}
             />
 
             {verifiedToken && (
-              <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-3 space-y-2">
+              <div className="space-y-2 rounded-lg border border-green-500/50 bg-green-900/30 p-3">
                 <div className="flex items-center space-x-2">
-                  <span className="text-green-400 text-xl">✓</span>
+                  <CheckCircle className="h-5 w-5 text-green-400" />
                   <div className="flex-1">
-                    <p className="font-semibold text-white">
+                    <p className={`font-semibold ${textPrimary}`}>
                       {verifiedToken.symbol} - {verifiedToken.name}
                     </p>
-                    <p className="text-sm text-gray-400">
-                      Balance: {Number.parseFloat(verifiedToken.balance).toFixed(4)}{' '}
+                    <p className={`text-sm ${textSecondary}`}>
+                      Balance:{ ' '}
+                      {Number.parseFloat(verifiedToken.balance).toFixed(4)}{' '}
                       {verifiedToken.symbol}
                     </p>
                   </div>
@@ -407,7 +413,7 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
                       setVerifiedToken(null)
                       setError(null)
                     }}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors"
+                    className="w-full rounded-lg bg-green-600 py-2 text-white transition-colors hover:bg-green-700"
                   >
                     Send {verifiedToken.symbol}
                   </button>
@@ -419,7 +425,8 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
               type="button"
               onClick={verifyTokenAddress}
               disabled={isVerifying || !customTokenAddress}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white py-2 rounded-lg transition-colors"
+              className="w-full rounded-lg py-2 text-white transition-colors disabled:bg-gray-600"
+              style={{ backgroundColor: accentColor }}
             >
               {isVerifying ? 'Verifying...' : 'Verify Token'}
             </button>
@@ -427,7 +434,7 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
         </div>
 
         {error && (
-          <div className="bg-red-900/30 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+          <div className="rounded-lg border border-red-500/50 bg-red-900/30 px-4 py-3 text-sm text-red-200">
             {error}
           </div>
         )}
@@ -450,35 +457,39 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             setError(null)
             setIsSuccess(false)
           }}
-          className="text-gray-400 hover:text-white"
+          className={`flex items-center space-x-2 ${textSecondary} hover:${textPrimary}`}
         >
-          ← Back
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back</span>
         </button>
-        <h2 className="text-xl font-bold">
+        <h2 className={`text-xl font-bold ${textPrimary}`}>
           Send {selectedToken?.symbol}
         </h2>
       </div>
 
       {/* Selected Token Display */}
       {selectedToken && (
-        <div className="bg-[#1a1a2e] rounded-lg p-4">
+        <div className={`rounded-lg p-4 ${cardBg}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold">
-                  {selectedToken.symbol.slice(0, 2)}
-                </span>
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-full"
+                style={{ backgroundColor: accentColor }}
+              >
+                <CircleDollarSign className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="font-semibold text-white">
+                <p className={`font-semibold ${textPrimary}`}>
                   {selectedToken.symbol}
                 </p>
-                <p className="text-xs text-gray-400">{selectedToken.name}</p>
+                <p className={`text-xs ${textSecondary}`}>
+                  {selectedToken.name}
+                </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-400">Available</p>
-              <p className="font-semibold text-white">
+              <p className={`text-sm ${textSecondary}`}>Available</p>
+              <p className={`font-semibold ${textPrimary}`}>
                 {Number.parseFloat(selectedToken.balance).toFixed(4)}
               </p>
             </div>
@@ -489,7 +500,8 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
       {/* Send Form */}
       <div className="space-y-3">
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">
+          <label
+            className={`mb-1 block text-sm font-medium ${textSecondary}`}>
             Recipient Address
           </label>
           <input
@@ -497,13 +509,14 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             placeholder="0x..."
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            className="w-full px-3 py-2 bg-[#1a1a2e] text-white border border-purple-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+            className={`w-full rounded-lg border border-purple-500/30 px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
             disabled={isPending}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-300">
+          <label
+            className={`mb-1 block text-sm font-medium ${textSecondary}`}>
             Amount
           </label>
           <div className="relative">
@@ -512,14 +525,14 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
               placeholder="0.0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full px-3 py-2 bg-[#1a1a2e] text-white border border-purple-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+              className={`w-full rounded-lg border border-purple-500/30 px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${inputBg} ${textPrimary}`}
               disabled={isPending}
             />
             {selectedToken && (
               <button
                 type="button"
                 onClick={() => setAmount(selectedToken.balance)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-300 text-xs font-semibold"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-purple-400 hover:text-purple-300"
               >
                 MAX
               </button>
@@ -531,27 +544,26 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
           type="button"
           onClick={sendTokens}
           disabled={isPending}
-          className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+          className="w-full rounded-lg py-3 px-4 font-semibold text-white transition-colors disabled:bg-gray-600"
+          style={{ backgroundColor: accentColor }}
         >
-          {isPending
-            ? 'Sending...'
-            : `Send ${selectedToken?.symbol || 'Token'}`}
+          {isPending ? 'Sending...' : `Send ${selectedToken?.symbol || 'Token'}`}
         </button>
 
         {error && (
-          <div className="bg-red-900/30 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+          <div className="rounded-lg border border-red-500/50 bg-red-900/30 px-4 py-3 text-sm text-red-200">
             {error}
           </div>
         )}
 
         {isSuccess && hash && (
-          <div className="bg-green-900/30 border border-green-500/50 text-green-200 px-4 py-3 rounded-lg text-sm space-y-2">
+          <div className="space-y-2 rounded-lg border border-green-500/50 bg-green-900/30 px-4 py-3 text-sm text-green-200">
             <p className="font-semibold">Transaction sent successfully!</p>
             <a
               href={`${monadTestnet.blockExplorers.default.url}/tx/${hash}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-purple-400 hover:text-purple-300 underline"
+              className="inline-block text-purple-400 underline hover:text-purple-300"
             >
               View on Explorer →
             </a>

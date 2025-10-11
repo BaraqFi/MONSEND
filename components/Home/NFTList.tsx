@@ -1,8 +1,11 @@
 'use client'
 
-import { publicClient } from '@/lib/viem'
+import { Image as ImageIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { Address } from 'viem'
+
+import { useTheme } from '@/components/theme-provider'
+import { publicClient } from '@/lib/viem'
 
 interface NFT {
   contractAddress: Address
@@ -37,6 +40,7 @@ const ERC721_ABI = [
 ] as const
 
 export function NFTList({ address }: { address: Address }) {
+  const { theme } = useTheme()
   const [nfts, setNfts] = useState<NFT[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -95,22 +99,33 @@ export function NFTList({ address }: { address: Address }) {
     return () => clearInterval(interval)
   }, [address])
 
+  const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-gray-900'
+  const textSecondary =
+    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+
   if (isLoading) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-gray-400 text-sm">Loading NFTs...</p>
+      <div className="grid grid-cols-2 gap-3">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className={`rounded-lg p-3 ${cardBg}`}>
+            <div className="aspect-square animate-pulse rounded-lg bg-gray-700" />
+            <div className="mt-2 h-5 w-3/4 animate-pulse rounded bg-gray-700" />
+            <div className="mt-1 h-4 w-1/2 animate-pulse rounded bg-gray-700" />
+          </div>
+        ))}
       </div>
     )
   }
 
-  if (nfts.length === 0 && !isLoading) {
+  if (nfts.length === 0) {
     return (
-      <div className="py-8 text-center space-y-3">
-        <p className="text-gray-400 text-sm">No NFTs detected</p>
-        <div className="text-xs text-gray-500 space-y-1">
+      <div className="space-y-3 py-8 text-center">
+        <p className={`text-sm ${textSecondary}`}>No NFTs detected</p>
+        <div className={`space-y-1 text-xs ${textSecondary}`}>
           <p>
-            To detect NFTs automatically, you'll need to add known NFT contract
-            addresses.
+            To detect NFTs automatically, you'll need to add known NFT
+            contract addresses.
           </p>
           <p className="mt-2">
             Or use{' '}
@@ -134,15 +149,19 @@ export function NFTList({ address }: { address: Address }) {
       {nfts.map((nft, index) => (
         <div
           key={`${nft.contractAddress}-${index}`}
-          className="bg-[#1a1a2e] rounded-lg p-3 hover:bg-[#252541] transition-colors"
+          className={`rounded-lg p-3 transition-colors hover:bg-purple-600/10 ${cardBg}`}
         >
-          <div className="aspect-square bg-purple-600 rounded-lg mb-2 flex items-center justify-center">
-            <span className="text-4xl">🖼️</span>
+          <div
+            className={`mb-2 flex aspect-square items-center justify-center rounded-lg bg-purple-600/10`}
+          >
+            <ImageIcon className="h-10 w-10 text-purple-400" />
           </div>
-          <p className="font-semibold text-white text-sm truncate">
+          <p className={`truncate text-sm font-semibold ${textPrimary}`}>
             {nft.name}
           </p>
-          <p className="text-xs text-gray-400 truncate">{nft.collection}</p>
+          <p className={`truncate text-xs ${textSecondary}`}>
+            {nft.collection}
+          </p>
         </div>
       ))}
     </div>

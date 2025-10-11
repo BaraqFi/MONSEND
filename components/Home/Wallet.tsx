@@ -1,15 +1,27 @@
 'use client'
 
-import { useFrame } from '@/components/farcaster-provider'
-import { useTheme } from '@/components/theme-provider'
-import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector'
-import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
-import { monadTestnet } from '@/lib/viem'
-import { SendTokens } from './SendTokens'
-import { TokenList } from './TokenList'
-import { NFTList } from './NFTList'
-import { TransactionHistory } from './TransactionHistory'
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Copy,
+  Moon,
+  Sun,
+  User as UserIcon,
+  Wallet as WalletIcon,
+  X,
+} from 'lucide-react'
 import { useState } from 'react'
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
+
+import { useFrame } from '@/components/farcaster-provider'
+import { NFTList } from '@/components/Home/NFTList'
+import { SendTokens } from '@/components/Home/SendTokens'
+import { TokenList } from '@/components/Home/TokenList'
+import { TransactionHistory } from '@/components/Home/TransactionHistory'
+import { WalletBalance } from '@/components/Home/WalletBalance'
+import { useTheme } from '@/components/theme-provider'
+import { monadTestnet } from '@/lib/viem'
+import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector'
 
 type Tab = 'coins' | 'nfts' | 'transactions'
 type Modal = 'send' | 'deposit' | null
@@ -31,17 +43,23 @@ export function Wallet() {
     setActiveModal(null)
   }
 
-  const bgColor = theme === 'dark' ? 'bg-[#2c2e30]' : 'bg-[#fafafb]'
+  const bgColor = theme === 'dark' ? 'bg-[#0f0f23]' : 'bg-gray-50'
   const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
-  const textPrimary = theme === 'dark' ? 'text-white' : 'text-[#2c2e30]'
-  const textSecondary = theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-  const borderColor = theme === 'dark' ? 'border-[#7564fb]/30' : 'border-[#7564fb]/20'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-gray-900'
+  const textSecondary =
+    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+  const borderColor = theme === 'dark' ? 'border-[#16162e]' : 'border-gray-200'
+  const accentColor = '#9333ea' // Purple 600
 
   // Not available in current client
   if (!isEthProviderAvailable) {
     return (
-      <div className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}>
-        <div className={`w-full max-w-md space-y-4 ${borderColor} border rounded-xl p-6 text-center ${cardBg}`}>
+      <div
+        className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}
+      >
+        <div
+          className={`w-full max-w-md space-y-4 rounded-xl p-6 text-center ${cardBg}`}
+        >
           <h2 className={`text-2xl font-bold ${textPrimary}`}>MONSEND</h2>
           <p className={`text-sm ${textSecondary}`}>
             Wallet connection is only available via Warpcast or supported
@@ -55,11 +73,16 @@ export function Wallet() {
   // Wallet not connected
   if (!isConnected) {
     return (
-      <div className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}>
-        <div className={`w-full max-w-md space-y-6 ${borderColor} border rounded-xl p-8 ${cardBg}`}>
+      <div
+        className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}
+      >
+        <div className={`w-full max-w-md space-y-6 rounded-xl p-8 ${cardBg}`}>
           <div className="text-center space-y-3">
-            <div className="w-20 h-20 bg-[#7564fb] rounded-full mx-auto flex items-center justify-center">
-              <span className="text-4xl">👛</span>
+            <div
+              className="mx-auto flex h-20 w-20 items-center justify-center rounded-full"
+              style={{ backgroundColor: accentColor }}
+            >
+              <WalletIcon className="h-10 w-10 text-white" />
             </div>
             <h1 className={`text-3xl font-bold ${textPrimary}`}>MONSEND</h1>
             <p className={`text-sm ${textSecondary}`}>
@@ -69,7 +92,8 @@ export function Wallet() {
 
           <button
             type="button"
-            className="w-full bg-[#7564fb] hover:bg-[#6454eb] text-white font-semibold py-4 px-4 rounded-xl transition-colors"
+            className="w-full font-semibold text-white py-4 px-4 rounded-xl transition-colors"
+            style={{ backgroundColor: accentColor }}
             onClick={() => connect({ connector: miniAppConnector() })}
           >
             Connect Wallet
@@ -82,24 +106,37 @@ export function Wallet() {
   // Wallet connected but wrong chain
   if (chainId !== monadTestnet.id) {
     return (
-      <div className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}>
-        <div className={`w-full max-w-md space-y-6 ${borderColor} border rounded-xl p-6 ${cardBg}`}>
+      <div
+        className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}
+      >
+        <div className={`w-full max-w-md space-y-6 rounded-xl p-6 ${cardBg}`}>
           <div className="text-center space-y-2">
-            <h1 className={`text-2xl font-bold ${textPrimary}`}>Wrong Network</h1>
+            <h1 className={`text-2xl font-bold ${textPrimary}`}>
+              Wrong Network
+            </h1>
             <p className={`text-sm ${textSecondary}`}>
               Please switch to Monad Testnet to continue
             </p>
           </div>
 
           <div className="space-y-4">
-            <div className={`${theme === 'dark' ? 'bg-yellow-900/30' : 'bg-yellow-100'} border ${theme === 'dark' ? 'border-yellow-500/50' : 'border-yellow-400'} ${theme === 'dark' ? 'text-yellow-200' : 'text-yellow-900'} px-4 py-3 rounded-lg text-sm`}>
+            <div
+              className={`${
+                theme === 'dark' ? 'bg-yellow-900/30' : 'bg-yellow-100'
+              } border ${
+                theme === 'dark' ? 'border-yellow-500/50' : 'border-yellow-400'
+              } ${
+                theme === 'dark' ? 'text-yellow-200' : 'text-yellow-900'
+              } rounded-lg px-4 py-3 text-sm`}
+            >
               <p className="font-semibold">Current chain ID: {chainId}</p>
-              <p className="text-xs mt-1">Expected: {monadTestnet.id}</p>
+              <p className="mt-1 text-xs">Expected: {monadTestnet.id}</p>
             </div>
 
             <button
               type="button"
-              className="w-full bg-[#7564fb] hover:bg-[#6454eb] text-white font-semibold py-3 px-4 rounded-xl transition-colors"
+              className="w-full font-semibold text-white py-3 px-4 rounded-xl transition-colors"
+              style={{ backgroundColor: accentColor }}
               onClick={() => switchChain({ chainId: monadTestnet.id })}
             >
               Switch to Monad Testnet
@@ -107,7 +144,11 @@ export function Wallet() {
 
             <button
               type="button"
-              className={`w-full ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-300 hover:bg-gray-400'} ${theme === 'dark' ? 'text-white' : 'text-[#2c2e30]'} font-semibold py-2 px-4 rounded-xl transition-colors text-sm`}
+              className={`w-full font-semibold py-2 px-4 rounded-xl transition-colors text-sm ${
+                theme === 'dark'
+                  ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                  : 'bg-gray-300 hover:bg-gray-400 text-gray-800'
+              }`}
               onClick={() => disconnect()}
             >
               Disconnect
@@ -121,70 +162,89 @@ export function Wallet() {
   // Wallet connected and on correct chain
   return (
     <div className={`min-h-screen ${bgColor} ${textPrimary}`}>
-      <div className="w-full max-w-md mx-auto">
+      <div className="mx-auto w-full max-w-md">
         {/* Profile Section */}
-        <div className="p-6 text-center space-y-4">
-          {/* User Avatar */}
-          <div className="w-24 h-24 mx-auto rounded-full overflow-hidden bg-gradient-to-br from-[#7564fb] to-blue-500 flex items-center justify-center">
+        <div className="space-y-4 p-6 text-center">
+          <div className="mx-auto h-24 w-24 overflow-hidden rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
             {context?.user?.pfpUrl ? (
               <img
                 src={context.user.pfpUrl}
                 alt="Profile"
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             ) : (
-              <span className="text-4xl">👤</span>
+              <UserIcon className="h-12 w-12 text-white" />
             )}
           </div>
 
-          {/* Address & Theme Toggle */}
           <div className="flex items-center justify-center space-x-2">
             <p className={`${textSecondary} font-mono text-sm`}>
               {address?.slice(0, 6)}...{address?.slice(-6)}
             </p>
             <button
               type="button"
-              className={`p-1 hover:bg-[#7564fb]/20 rounded`}
+              className="rounded p-1 hover:bg-purple-600/20"
               onClick={() => {
                 if (address) {
                   navigator.clipboard.writeText(address)
                 }
               }}
             >
-              📋
+              <Copy className="h-4 w-4" />
             </button>
             <button
               type="button"
-              className={`p-1 hover:bg-[#7564fb]/20 rounded ml-2`}
+              className="ml-2 rounded p-1 hover:bg-purple-600/20"
               onClick={toggleTheme}
               title="Toggle theme"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
             </button>
           </div>
 
-          {/* Network Badge */}
-          <div className={`inline-flex items-center space-x-2 ${theme === 'dark' ? 'bg-[#7564fb]/20' : 'bg-[#7564fb]/10'} border ${theme === 'dark' ? 'border-[#7564fb]/50' : 'border-[#7564fb]/30'} rounded-full px-4 py-2`}>
-            <div className="w-2 h-2 bg-[#7564fb] rounded-full animate-pulse" />
-            <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-[#7564fb]' : 'text-[#7564fb]'}`}>
+          <div
+            className={`inline-flex items-center space-x-2 rounded-full px-4 py-2 border ${
+              theme === 'dark'
+                ? 'bg-purple-600/20 border-purple-600/50'
+                : 'bg-purple-600/10 border-purple-600/30'
+            }`}
+          >
+            <div className="h-2 w-2 animate-pulse rounded-full bg-purple-400" />
+            <span className="text-sm font-semibold text-purple-400">
               MONAD TESTNET
             </span>
           </div>
         </div>
 
+        {/* Balance Display */}
+        {address && (
+          <WalletBalance
+            address={address}
+            refreshTrigger={balanceRefreshTrigger}
+          />
+        )}
 
         {/* Action Buttons */}
         <div className="px-6 py-4">
-          <div className="flex justify-center space-x-8">
+          <div className="flex justify-center space-x-4">
             <button
               type="button"
               className="flex flex-col items-center space-y-2 group"
               onClick={() => setActiveModal('send')}
             >
-              <div className="w-16 h-16 bg-[#7564fb] rounded-full flex items-center justify-center group-hover:bg-[#6454eb] transition-colors">
-                <span className="text-3xl">↗️</span>
+              <div
+                className="flex h-16 w-16 items-center justify-center rounded-full transition-colors"
+                style={{ backgroundColor: accentColor }}
+              >
+                <ArrowUpRight className="h-8 w-8 text-white" />
               </div>
-              <span className={`text-sm font-medium ${textSecondary}`}>Send</span>
+              <span className={`text-sm font-medium ${textSecondary}`}>
+                Send
+              </span>
             </button>
 
             <button
@@ -192,10 +252,15 @@ export function Wallet() {
               className="flex flex-col items-center space-y-2 group"
               onClick={() => setActiveModal('deposit')}
             >
-              <div className="w-16 h-16 bg-[#7564fb] rounded-full flex items-center justify-center group-hover:bg-[#6454eb] transition-colors">
-                <span className="text-3xl">↙️</span>
+              <div
+                className="flex h-16 w-16 items-center justify-center rounded-full transition-colors"
+                style={{ backgroundColor: accentColor }}
+              >
+                <ArrowDownLeft className="h-8 w-8 text-white" />
               </div>
-              <span className={`text-sm font-medium ${textSecondary}`}>Deposit</span>
+              <span className={`text-sm font-medium ${textSecondary}`}>
+                Deposit
+              </span>
             </button>
           </div>
         </div>
@@ -205,53 +270,56 @@ export function Wallet() {
           <div className="flex">
             <button
               type="button"
-              className={`flex-1 py-4 text-sm font-semibold transition-colors relative ${
+              className={`relative flex-1 py-4 text-sm font-semibold transition-colors ${
                 activeTab === 'coins'
-                  ? 'text-[#7564fb]'
-                  : `${textSecondary} hover:${textPrimary}`
+                  ? 'text-purple-400'
+                  : `${textSecondary} hover:text-white`
               }`}
               onClick={() => setActiveTab('coins')}
             >
               Coins
               {activeTab === 'coins' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7564fb]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
               )}
             </button>
             <button
               type="button"
-              className={`flex-1 py-4 text-sm font-semibold transition-colors relative ${
+              className={`relative flex-1 py-4 text-sm font-semibold transition-colors ${
                 activeTab === 'nfts'
-                  ? 'text-[#7564fb]'
-                  : `${textSecondary} hover:${textPrimary}`
+                  ? 'text-purple-400'
+                  : `${textSecondary} hover:text-white`
               }`}
               onClick={() => setActiveTab('nfts')}
             >
               NFTs
               {activeTab === 'nfts' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7564fb]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
               )}
             </button>
             <button
               type="button"
-              className={`flex-1 py-4 text-sm font-semibold transition-colors relative ${
+              className={`relative flex-1 py-4 text-sm font-semibold transition-colors ${
                 activeTab === 'transactions'
-                  ? 'text-[#7564fb]'
-                  : `${textSecondary} hover:${textPrimary}`
+                  ? 'text-purple-400'
+                  : `${textSecondary} hover:text-white`
               }`}
               onClick={() => setActiveTab('transactions')}
             >
               Transactions
               {activeTab === 'transactions' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7564fb]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
               )}
             </button>
           </div>
         </div>
 
         {/* Tab Content */}
-        <div className="p-4 min-h-[300px]">
+        <div className="min-h-[300px] p-4">
           {activeTab === 'coins' && address && (
-            <TokenList address={address} refreshTrigger={balanceRefreshTrigger} />
+            <TokenList
+              address={address}
+              refreshTrigger={balanceRefreshTrigger}
+            />
           )}
 
           {activeTab === 'nfts' && address && <NFTList address={address} />}
@@ -264,16 +332,22 @@ export function Wallet() {
 
       {/* Send Modal */}
       {activeModal === 'send' && (
-        <div className="fixed inset-0 bg-black/80 flex items-end sm:items-center justify-center z-50">
-          <div className={`${cardBg} w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto`}>
-            <div className={`sticky top-0 ${cardBg} border-b ${borderColor} p-4 flex items-center justify-between`}>
-              <h2 className={`text-xl font-bold ${textPrimary}`}>Send Tokens</h2>
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 sm:items-center">
+          <div
+            className={`${cardBg} max-h-[90vh] w-full overflow-y-auto rounded-t-2xl sm:max-w-md sm:rounded-2xl`}
+          >
+            <div
+              className={`sticky top-0 flex items-center justify-between border-b p-4 ${borderColor} ${cardBg}`}
+            >
+              <h2 className={`text-xl font-bold ${textPrimary}`}>
+                Send Tokens
+              </h2>
               <button
                 type="button"
                 className={`text-2xl ${textSecondary} hover:${textPrimary}`}
                 onClick={() => setActiveModal(null)}
               >
-                ✕
+                <X className="h-6 w-6" />
               </button>
             </div>
             <div className="p-4">
@@ -285,21 +359,33 @@ export function Wallet() {
 
       {/* Deposit Modal */}
       {activeModal === 'deposit' && address && (
-        <div className="fixed inset-0 bg-black/80 flex items-end sm:items-center justify-center z-50">
-          <div className={`${cardBg} w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6`}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className={`text-xl font-bold ${textPrimary}`}>Deposit MON</h2>
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 sm:items-center">
+          <div
+            className={`${cardBg} w-full rounded-t-2xl p-6 sm:max-w-md sm:rounded-2xl`}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className={`text-xl font-bold ${textPrimary}`}>
+                Deposit MON
+              </h2>
               <button
                 type="button"
                 className={`text-2xl ${textSecondary} hover:${textPrimary}`}
                 onClick={() => setActiveModal(null)}
               >
-                ✕
+                <X className="h-6 w-6" />
               </button>
             </div>
             <div className="space-y-4 text-center">
-              <div className={`${theme === 'dark' ? 'bg-white' : 'bg-gray-100'} p-4 rounded-lg`}>
-                <p className={`${theme === 'dark' ? 'text-black' : 'text-[#2c2e30]'} font-mono text-sm break-all`}>
+              <div
+                className={`${
+                  theme === 'dark' ? 'bg-white' : 'bg-gray-100'
+                } rounded-lg p-4`}
+              >
+                <p
+                  className={`${
+                    theme === 'dark' ? 'text-black' : 'text-gray-800'
+                  } break-all font-mono text-sm`}
+                >
                   {address}
                 </p>
               </div>
@@ -308,12 +394,16 @@ export function Wallet() {
               </p>
               <button
                 type="button"
-                className="w-full bg-[#7564fb] hover:bg-[#6454eb] text-white py-3 rounded-lg"
+                className="w-full py-3 text-white rounded-lg"
+                style={{ backgroundColor: accentColor }}
                 onClick={() => {
                   navigator.clipboard.writeText(address)
                 }}
               >
-                Copy Address
+                <div className="flex items-center justify-center space-x-2">
+                  <Copy className="h-4 w-4" />
+                  <span>Copy Address</span>
+                </div>
               </button>
             </div>
           </div>

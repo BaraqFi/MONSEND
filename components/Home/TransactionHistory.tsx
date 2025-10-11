@@ -1,8 +1,11 @@
 'use client'
 
-import { publicClient, monadTestnet } from '@/lib/viem'
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { formatEther, type Address, type Hash } from 'viem'
+
+import { useTheme } from '@/components/theme-provider'
+import { monadTestnet, publicClient } from '@/lib/viem'
 
 interface Transaction {
   hash: Hash
@@ -15,6 +18,7 @@ interface Transaction {
 }
 
 export function TransactionHistory({ address }: { address: Address }) {
+  const { theme } = useTheme()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -42,7 +46,7 @@ export function TransactionHistory({ address }: { address: Address }) {
 
         for (let i = 0; i < blocksToCheck; i++) {
           const blockNum = latestBlock - BigInt(i)
-          
+
           try {
             const block = await publicClient.getBlock({
               blockNumber: blockNum,
@@ -95,10 +99,32 @@ export function TransactionHistory({ address }: { address: Address }) {
     return () => clearInterval(interval)
   }, [address])
 
+  const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-gray-900'
+  const textSecondary =
+    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+
   if (isLoading) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-gray-400 text-sm">Loading transactions...</p>
+      <div className="space-y-2">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className={`flex items-center justify-between rounded-lg p-4 ${cardBg}`}
+          >
+            <div className="flex items-center space-x-3">
+              <div className="h-10 w-10 animate-pulse rounded-full bg-gray-700" />
+              <div>
+                <div className="h-5 w-20 animate-pulse rounded bg-gray-700" />
+                <div className="mt-1 h-4 w-24 animate-pulse rounded bg-gray-700" />
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="h-5 w-24 animate-pulse rounded bg-gray-700" />
+              <div className="mt-1 h-4 w-16 animate-pulse rounded bg-gray-700" />
+            </div>
+          </div>
+        ))}
       </div>
     )
   }
@@ -106,8 +132,8 @@ export function TransactionHistory({ address }: { address: Address }) {
   if (transactions.length === 0) {
     return (
       <div className="py-8 text-center">
-        <p className="text-gray-400 text-sm">No transactions yet</p>
-        <p className="text-gray-500 text-xs mt-2">
+        <p className={`text-sm ${textSecondary}`}>No transactions yet</p>
+        <p className={`mt-2 text-xs ${textSecondary}`}>
           Your transaction history will appear here
         </p>
       </div>
@@ -119,27 +145,31 @@ export function TransactionHistory({ address }: { address: Address }) {
       {transactions.map((tx) => (
         <div
           key={tx.hash}
-          className="flex items-center justify-between p-4 bg-[#1a1a2e] rounded-lg hover:bg-[#252541] transition-colors cursor-pointer"
+          className={`flex items-center justify-between rounded-lg p-4 transition-colors cursor-pointer ${cardBg} hover:bg-purple-600/10`}
           onClick={() =>
             window.open(
               `${monadTestnet.blockExplorers.default.url}/tx/${tx.hash}`,
-              '_blank',
+              '_blank'
             )
           }
         >
           <div className="flex items-center space-x-3">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 tx.type === 'sent' ? 'bg-red-500/20' : 'bg-green-500/20'
               }`}
             >
-              <span className="text-xl">{tx.type === 'sent' ? '↗' : '↙'}</span>
+              {tx.type === 'sent' ? (
+                <ArrowUpRight className="h-5 w-5 text-red-400" />
+              ) : (
+                <ArrowDownLeft className="h-5 w-5 text-green-400" />
+              )}
             </div>
             <div>
-              <p className="font-semibold text-white text-sm">
+              <p className={`text-sm font-semibold ${textPrimary}`}>
                 {tx.type === 'sent' ? 'Sent' : 'Received'}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className={`text-xs ${textSecondary}`}>
                 {new Date(tx.timestamp * 1000).toLocaleString()}
               </p>
             </div>
@@ -153,7 +183,7 @@ export function TransactionHistory({ address }: { address: Address }) {
               {tx.type === 'sent' ? '-' : '+'}
               {formatEther(tx.value)} MON
             </p>
-            <p className="text-xs text-gray-500">
+            <p className={`text-xs ${textSecondary}`}>
               {tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}
             </p>
           </div>

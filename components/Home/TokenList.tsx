@@ -1,9 +1,11 @@
 'use client'
 
-import { publicClient } from '@/lib/viem'
-import { useTheme } from '@/components/theme-provider'
+import { CircleDollarSign } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { formatUnits, formatEther, type Address } from 'viem'
+import { formatEther, formatUnits, type Address } from 'viem'
+
+import { useTheme } from '@/components/theme-provider'
+import { publicClient } from '@/lib/viem'
 
 interface Token {
   address: Address | 'native'
@@ -134,13 +136,36 @@ export function TokenList({ address, refreshTrigger }: TokenListProps) {
   }, [address, refreshTrigger])
 
   const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
-  const textPrimary = theme === 'dark' ? 'text-white' : 'text-[#2c2e30]'
-  const textSecondary = theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-gray-900'
+  const textSecondary =
+    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
 
   if (isLoading) {
     return (
+      <div className="space-y-3">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className={`flex items-center justify-between rounded-lg p-4 ${cardBg}`}
+          >
+            <div className="flex items-center space-x-3">
+              <div className="h-12 w-12 animate-pulse rounded-full bg-gray-700" />
+              <div>
+                <div className="h-5 w-20 animate-pulse rounded bg-gray-700" />
+                <div className="mt-1 h-4 w-12 animate-pulse rounded bg-gray-700" />
+              </div>
+            </div>
+            <div className="h-6 w-24 animate-pulse rounded bg-gray-700" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (tokens.length === 0) {
+    return (
       <div className="py-8 text-center">
-        <p className={textSecondary + ' text-sm'}>Loading...</p>
+        <p className={`text-sm ${textSecondary}`}>No tokens found</p>
       </div>
     )
   }
@@ -150,21 +175,24 @@ export function TokenList({ address, refreshTrigger }: TokenListProps) {
       {tokens.map((token) => (
         <div
           key={token.address}
-          className={`flex items-center justify-between p-4 ${cardBg} rounded-lg`}
+          className={`flex items-center justify-between rounded-lg p-4 ${cardBg}`}
         >
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-[#7564fb] flex items-center justify-center">
-              <span className="text-white font-bold text-lg">
-                {token.symbol.slice(0, 1)}
-              </span>
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-full"
+              style={{ backgroundColor: '#9333ea' }}
+            >
+              <CircleDollarSign className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className={`font-semibold ${textPrimary} text-lg`}>{token.symbol}</p>
+              <p className={`text-lg font-semibold ${textPrimary}`}>
+                {token.symbol}
+              </p>
               <p className={`text-sm ${textSecondary}`}>{token.name}</p>
             </div>
           </div>
           <div className="text-right">
-            <p className={`font-semibold ${textPrimary} text-xl`}>
+            <p className={`text-xl font-semibold ${textPrimary}`}>
               {Number.parseFloat(token.balance).toFixed(6)}
             </p>
           </div>

@@ -1,4 +1,5 @@
 import { useFrame } from '@/components/farcaster-provider'
+import { useTheme } from '@/components/theme-provider'
 import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector'
 import { parseEther } from 'viem'
 import { monadTestnet } from 'viem/chains'
@@ -11,6 +12,7 @@ import {
 } from 'wagmi'
 
 export function WalletActions() {
+  const { theme } = useTheme()
   const { isEthProviderAvailable } = useFrame()
   const { isConnected, address, chainId } = useAccount()
   const { disconnect } = useDisconnect()
@@ -25,69 +27,85 @@ export function WalletActions() {
     })
   }
 
+  const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
+  const textPrimary = theme === 'dark' ? 'text-white' : 'text-gray-900'
+  const textSecondary =
+    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+  const accentColor = '#9333ea' // Purple 600
+
+  const buttonClasses =
+    'w-full rounded-lg p-2 text-sm text-white transition-colors disabled:bg-gray-600'
+
   if (isConnected) {
     return (
-      <div className="space-y-4 border border-[#333] rounded-md p-4">
-        <h2 className="text-xl font-bold text-left">sdk.wallet.ethProvider</h2>
-        <div className="flex flex-row space-x-4 justify-start items-start">
-          <div className="flex flex-col space-y-4 justify-start">
-            <p className="text-sm text-left">
-              Connected to wallet:{' '}
-              <span className="bg-white font-mono text-black rounded-md p-[4px]">
-                {address}
-              </span>
-            </p>
-            <p className="text-sm text-left">
-              Chain Id:{' '}
-              <span className="bg-white font-mono text-black rounded-md p-[4px]">
-                {chainId}
-              </span>
-            </p>
-            {chainId === monadTestnet.id ? (
-              <div className="flex flex-col space-y-2 border border-[#333] p-4 rounded-md">
-                <h2 className="text-lg font-semibold text-left">
-                  Send Transaction Example
-                </h2>
-                <button
-                  type="button"
-                  className="bg-white text-black rounded-md p-2 text-sm"
-                  onClick={sendTransactionHandler}
-                >
-                  Send Transaction
-                </button>
-                {hash && (
-                  <button
-                    type="button"
-                    className="bg-white text-black rounded-md p-2 text-sm"
-                    onClick={() =>
-                      window.open(
-                        `https://testnet.monadexplorer.com/tx/${hash}`,
-                        '_blank',
-                      )
-                    }
-                  >
-                    View Transaction
-                  </button>
-                )}
-              </div>
-            ) : (
+      <div className={`space-y-4 rounded-lg p-4 ${cardBg}`}>
+        <h2 className={`text-xl font-bold text-left ${textPrimary}`}>
+          Wallet Actions
+        </h2>
+        <div className="flex flex-col space-y-4">
+          <p className={`text-sm text-left ${textSecondary}`}>
+            Connected to wallet:{ ' '}
+            <span className={`rounded-md p-1 font-mono ${textPrimary}`}>
+              {address}
+            </span>
+          </p>
+          <p className={`text-sm text-left ${textSecondary}`}>
+            Chain Id:{ ' '}
+            <span className={`rounded-md p-1 font-mono ${textPrimary}`}>
+              {chainId}
+            </span>
+          </p>
+          {chainId === monadTestnet.id ? (
+            <div
+              className={`space-y-2 rounded-lg border p-4 ${
+                theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+              }`}>
+              <h2 className={`text-lg font-semibold text-left ${textPrimary}`}>
+                Send Transaction Example
+              </h2>
               <button
                 type="button"
-                className="bg-white text-black rounded-md p-2 text-sm"
-                onClick={() => switchChain({ chainId: monadTestnet.id })}
+                className={buttonClasses}
+                style={{ backgroundColor: accentColor }}
+                onClick={sendTransactionHandler}
               >
-                Switch to Monad Testnet
+                Send Transaction
               </button>
-            )}
-
+              {hash && (
+                <button
+                  type="button"
+                  className={buttonClasses}
+                  style={{ backgroundColor: accentColor }}
+                  onClick={() =>
+                    window.open(
+                      `https://testnet.monadexplorer.com/tx/${hash}`,
+                      '_blank'
+                    )
+                  }
+                >
+                  View Transaction
+                </button>
+              )}
+            </div>
+          ) : (
             <button
               type="button"
-              className="bg-white text-black rounded-md p-2 text-sm"
-              onClick={() => disconnect()}
+              className={buttonClasses}
+              style={{ backgroundColor: accentColor }}
+              onClick={() => switchChain({ chainId: monadTestnet.id })}
             >
-              Disconnect Wallet
+              Switch to Monad Testnet
             </button>
-          </div>
+          )}
+
+          <button
+            type="button"
+            className={buttonClasses}
+            style={{ backgroundColor: accentColor }}
+            onClick={() => disconnect()}
+          >
+            Disconnect Wallet
+          </button>
         </div>
       </div>
     )
@@ -95,27 +113,30 @@ export function WalletActions() {
 
   if (isEthProviderAvailable) {
     return (
-      <div className="space-y-4 border border-[#333] rounded-md p-4">
-        <h2 className="text-xl font-bold text-left">sdk.wallet.ethProvider</h2>
-        <div className="flex flex-row space-x-4 justify-start items-start">
-          <button
-            type="button"
-            className="bg-white text-black w-full rounded-md p-2 text-sm"
-            onClick={() => connect({ connector: miniAppConnector() })}
-          >
-            Connect Wallet
-          </button>
-        </div>
+      <div className={`space-y-4 rounded-lg p-4 ${cardBg}`}>
+        <h2 className={`text-xl font-bold text-left ${textPrimary}`}>
+          Wallet Actions
+        </h2>
+        <button
+          type="button"
+          className={buttonClasses}
+          style={{ backgroundColor: accentColor }}
+          onClick={() => connect({ connector: miniAppConnector() })}
+        >
+          Connect Wallet
+        </button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4 border border-[#333] rounded-md p-4">
-      <h2 className="text-xl font-bold text-left">sdk.wallet.ethProvider</h2>
-      <div className="flex flex-row space-x-4 justify-start items-start">
-        <p className="text-sm text-left">Wallet connection only via Warpcast</p>
-      </div>
+    <div className={`space-y-4 rounded-lg p-4 ${cardBg}`}>
+      <h2 className={`text-xl font-bold text-left ${textPrimary}`}>
+        Wallet Actions
+      </h2>
+      <p className={`text-sm text-left ${textSecondary}`}>
+        Wallet connection only via Warpcast
+      </p>
     </div>
   )
 }
