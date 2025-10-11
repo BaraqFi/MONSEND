@@ -1,6 +1,6 @@
 'use client'
 
-import { Demo } from '@/components/Home'
+import { Wallet } from '@/components/Home/Wallet'
 import { useFrame } from '@/components/farcaster-provider'
 import { SafeAreaContainer } from '@/components/safe-area-container'
 
@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <SafeAreaContainer insets={context?.client.safeAreaInsets}>
-      <Demo />
+      <Wallet />
     </SafeAreaContainer>
   )
 }
