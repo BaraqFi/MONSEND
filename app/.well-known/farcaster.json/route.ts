@@ -5,10 +5,10 @@ export async function GET() {
     frame: {
       name: "MONSEND",
       version: "1",
-      iconUrl: "https://monsend.vercel.app/icon.png",
+      iconUrl: "https://monsend.vercel.app/images/icon.png",
       homeUrl: "https://monsend.vercel.app",
-      imageUrl: "https://monsend.vercel.app/image.png",
-      splashImageUrl: "https://monsend.vercel.app/splash.png",
+      imageUrl: "https://monsend.vercel.app/images/feed.png",
+      splashImageUrl: "https://monsend.vercel.app/images/splash.png",
       splashBackgroundColor: "#fafafb",
       webhookUrl: "https://monsend.vercel.app/api/webhook",
       subtitle: "send monad tokens on farcaster",
