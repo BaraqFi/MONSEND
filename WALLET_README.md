@@ -1,6 +1,6 @@
-# MONCAST
+# MONSEND
 
-A Farcaster Mini App for managing MON tokens on Monad Testnet.
+A Farcaster Mini App for sending and receiving MON tokens on Monad Testnet.
 
 ## Features
 

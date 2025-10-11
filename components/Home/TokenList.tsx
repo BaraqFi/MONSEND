@@ -120,13 +120,28 @@ export function TokenList({ address }: { address: Address }) {
     )
   }
 
-  if (tokens.length === 0) {
+  if (tokens.length === 0 && !isLoading) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-gray-400 text-sm">No tokens found</p>
-        <p className="text-gray-500 text-xs mt-2">
-          Your ERC-20 tokens will appear here
-        </p>
+      <div className="py-8 text-center space-y-3">
+        <p className="text-gray-400 text-sm">No ERC-20 tokens detected</p>
+        <div className="text-xs text-gray-500 space-y-1">
+          <p>
+            To detect tokens automatically, you'll need to add known token
+            contract addresses.
+          </p>
+          <p className="mt-2">
+            Or use{' '}
+            <a
+              href="https://info.monadscan.com/myapikey/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-purple-400 hover:text-purple-300 underline"
+            >
+              MonadScan API
+            </a>{' '}
+            for automatic detection.
+          </p>
+        </div>
       </div>
     )
   }
@@ -150,7 +165,10 @@ export function TokenList({ address }: { address: Address }) {
             </div>
           </div>
           <div className="text-right">
-            <p className="font-semibold text-white">{token.balance}</p>
+            <p className="font-semibold text-white">
+              {Number.parseFloat(token.balance).toFixed(4)}
+            </p>
+            <p className="text-xs text-gray-400">{token.symbol}</p>
           </div>
         </div>
       ))}

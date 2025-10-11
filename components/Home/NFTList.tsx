@@ -103,13 +103,28 @@ export function NFTList({ address }: { address: Address }) {
     )
   }
 
-  if (nfts.length === 0) {
+  if (nfts.length === 0 && !isLoading) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-gray-400 text-sm">No NFTs found</p>
-        <p className="text-gray-500 text-xs mt-2">
-          Your NFT collection will appear here
-        </p>
+      <div className="py-8 text-center space-y-3">
+        <p className="text-gray-400 text-sm">No NFTs detected</p>
+        <div className="text-xs text-gray-500 space-y-1">
+          <p>
+            To detect NFTs automatically, you'll need to add known NFT contract
+            addresses.
+          </p>
+          <p className="mt-2">
+            Or use{' '}
+            <a
+              href="https://info.monadscan.com/myapikey/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-purple-400 hover:text-purple-300 underline"
+            >
+              MonadScan API
+            </a>{' '}
+            for automatic detection.
+          </p>
+        </div>
       </div>
     )
   }

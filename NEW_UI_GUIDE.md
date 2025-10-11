@@ -1,8 +1,8 @@
-# MONCAST - New UI Guide
+# MONSEND - New UI Guide
 
 ## 🎨 What's New
 
-Your MONCAST wallet has been completely redesigned with a sleek, modern interface inspired by professional wallet apps!
+Your MONSEND wallet has been completely redesigned with a sleek, modern interface inspired by professional wallet apps!
 
 ## ✨ Key Features
 
@@ -227,5 +227,5 @@ You now have a beautiful, functional wallet interface that:
 - ✅ Mobile-optimized
 - ✅ Easy to extend
 
-Enjoy your new MONCAST wallet! 🚀
+Enjoy your new MONSEND wallet! 🚀
 

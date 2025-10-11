@@ -10,8 +10,8 @@ interface Transaction {
   to: Address | null
   value: bigint
   timestamp: number
-  status: 'success' | 'pending' | 'failed'
   blockNumber: bigint
+  type: 'sent' | 'received'
 }
 
 export function TransactionHistory({ address }: { address: Address }) {
@@ -26,24 +26,59 @@ export function TransactionHistory({ address }: { address: Address }) {
         // Get the latest block number
         const latestBlock = await publicClient.getBlockNumber()
 
-        // Fetch recent blocks (last 100 blocks or so)
+        // Fetch recent blocks (last 1000 blocks for better coverage)
         const fromBlock =
-          latestBlock - BigInt(100) > BigInt(0)
-            ? latestBlock - BigInt(100)
+          latestBlock - BigInt(1000) > BigInt(0)
+            ? latestBlock - BigInt(1000)
             : BigInt(0)
 
-        // Get transactions for this address
-        const logs = await publicClient.getLogs({
-          fromBlock,
-          toBlock: latestBlock,
-        })
-
-        // Filter and format transactions
-        // Note: This is a simplified approach
-        // In production, you'd use an indexer or explorer API
+        // Fetch blocks and extract transactions
         const txs: Transaction[] = []
+        const addressLower = address.toLowerCase()
 
-        // For now, we'll show a placeholder message
+        // Scan through recent blocks to find transactions
+        // Note: This is resource-intensive. In production, use MonadScan API
+        const blocksToCheck = Math.min(Number(latestBlock - fromBlock), 50) // Limit to last 50 blocks
+
+        for (let i = 0; i < blocksToCheck; i++) {
+          const blockNum = latestBlock - BigInt(i)
+          
+          try {
+            const block = await publicClient.getBlock({
+              blockNumber: blockNum,
+              includeTransactions: true,
+            })
+
+            if (block.transactions) {
+              for (const tx of block.transactions) {
+                if (typeof tx === 'object') {
+                  const txFrom = tx.from?.toLowerCase()
+                  const txTo = tx.to?.toLowerCase()
+
+                  // Check if transaction involves our address
+                  if (txFrom === addressLower || txTo === addressLower) {
+                    txs.push({
+                      hash: tx.hash,
+                      from: tx.from,
+                      to: tx.to,
+                      value: tx.value,
+                      timestamp: Number(block.timestamp),
+                      blockNumber: block.number,
+                      type: txFrom === addressLower ? 'sent' : 'received',
+                    })
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            // Skip blocks that error
+            console.error(`Failed to fetch block ${blockNum}:`, err)
+          }
+        }
+
+        // Sort by block number (newest first)
+        txs.sort((a, b) => Number(b.blockNumber - a.blockNumber))
+
         setTransactions(txs)
       } catch (error) {
         console.error('Failed to fetch transactions:', error)
@@ -55,8 +90,8 @@ export function TransactionHistory({ address }: { address: Address }) {
 
     fetchTransactions()
 
-    // Refresh every 15 seconds
-    const interval = setInterval(fetchTransactions, 15000)
+    // Refresh every 30 seconds (slower to avoid rate limits)
+    const interval = setInterval(fetchTransactions, 30000)
     return () => clearInterval(interval)
   }, [address])
 
@@ -95,35 +130,27 @@ export function TransactionHistory({ address }: { address: Address }) {
           <div className="flex items-center space-x-3">
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                tx.from.toLowerCase() === address.toLowerCase()
-                  ? 'bg-red-500/20'
-                  : 'bg-green-500/20'
+                tx.type === 'sent' ? 'bg-red-500/20' : 'bg-green-500/20'
               }`}
             >
-              <span className="text-xl">
-                {tx.from.toLowerCase() === address.toLowerCase() ? '↑' : '↓'}
-              </span>
+              <span className="text-xl">{tx.type === 'sent' ? '↗' : '↙'}</span>
             </div>
             <div>
               <p className="font-semibold text-white text-sm">
-                {tx.from.toLowerCase() === address.toLowerCase()
-                  ? 'Sent'
-                  : 'Received'}
+                {tx.type === 'sent' ? 'Sent' : 'Received'}
               </p>
               <p className="text-xs text-gray-400">
-                {new Date(tx.timestamp * 1000).toLocaleDateString()}
+                {new Date(tx.timestamp * 1000).toLocaleString()}
               </p>
             </div>
           </div>
           <div className="text-right">
             <p
               className={`font-semibold ${
-                tx.from.toLowerCase() === address.toLowerCase()
-                  ? 'text-red-400'
-                  : 'text-green-400'
+                tx.type === 'sent' ? 'text-red-400' : 'text-green-400'
               }`}
             >
-              {tx.from.toLowerCase() === address.toLowerCase() ? '-' : '+'}
+              {tx.type === 'sent' ? '-' : '+'}
               {formatEther(tx.value)} MON
             </p>
             <p className="text-xs text-gray-500">

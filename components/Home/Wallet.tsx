@@ -35,7 +35,7 @@ export function Wallet() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#0f0f23]">
         <div className="w-full max-w-md space-y-4 border border-purple-500/30 rounded-xl p-6 text-center bg-[#16162e]">
-          <h2 className="text-2xl font-bold text-white">MONCAST</h2>
+          <h2 className="text-2xl font-bold text-white">MONSEND</h2>
           <p className="text-sm text-gray-400">
             Wallet connection is only available via Warpcast or supported
             Farcaster clients
@@ -54,9 +54,9 @@ export function Wallet() {
             <div className="w-20 h-20 bg-purple-600 rounded-full mx-auto flex items-center justify-center">
               <span className="text-4xl">👛</span>
             </div>
-            <h1 className="text-3xl font-bold text-white">MONCAST</h1>
+            <h1 className="text-3xl font-bold text-white">MONSEND</h1>
             <p className="text-sm text-gray-400">
-              Connect your Farcaster wallet to manage MON tokens
+              Connect your Farcaster wallet to send MON tokens
             </p>
           </div>
 
@@ -115,25 +115,6 @@ export function Wallet() {
   return (
     <div className="min-h-screen bg-[#0f0f23] text-white">
       <div className="w-full max-w-md mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-purple-500/20">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-2xl">👛</span>
-            </div>
-            <h1 className="text-xl font-bold">My Wallet</h1>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors"
-              onClick={() => disconnect()}
-            >
-              <span className="text-xl">🚪</span>
-            </button>
-          </div>
-        </div>
-
         {/* Profile Section */}
         <div className="p-6 text-center space-y-4">
           {/* User Avatar */}
@@ -183,16 +164,16 @@ export function Wallet() {
 
         {/* Action Buttons */}
         <div className="px-6 py-4">
-          <div className="flex justify-around">
+          <div className="flex justify-center space-x-8">
             <button
               type="button"
               className="flex flex-col items-center space-y-2 group"
               onClick={() => setActiveModal('send')}
             >
-              <div className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center group-hover:bg-purple-700 transition-colors">
-                <span className="text-2xl">↗️</span>
+              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center group-hover:bg-purple-700 transition-colors">
+                <span className="text-3xl">↗️</span>
               </div>
-              <span className="text-xs text-gray-400">Send</span>
+              <span className="text-sm font-medium text-gray-300">Send</span>
             </button>
 
             <button
@@ -200,43 +181,10 @@ export function Wallet() {
               className="flex flex-col items-center space-y-2 group"
               onClick={() => setActiveModal('deposit')}
             >
-              <div className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center group-hover:bg-purple-700 transition-colors">
-                <span className="text-2xl">↙️</span>
+              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center group-hover:bg-purple-700 transition-colors">
+                <span className="text-3xl">↙️</span>
               </div>
-              <span className="text-xs text-gray-400">Deposit</span>
-            </button>
-
-            <button
-              type="button"
-              className="flex flex-col items-center space-y-2 group opacity-50"
-              disabled
-            >
-              <div className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🔄</span>
-              </div>
-              <span className="text-xs text-gray-400">Swap</span>
-            </button>
-
-            <button
-              type="button"
-              className="flex flex-col items-center space-y-2 group opacity-50"
-              disabled
-            >
-              <div className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-2xl">💰</span>
-              </div>
-              <span className="text-xs text-gray-400">Earn</span>
-            </button>
-
-            <button
-              type="button"
-              className="flex flex-col items-center space-y-2 group opacity-50"
-              disabled
-            >
-              <div className="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🌉</span>
-              </div>
-              <span className="text-xs text-gray-400">Bridge</span>
+              <span className="text-sm font-medium text-gray-300">Deposit</span>
             </button>
           </div>
         </div>
@@ -292,25 +240,18 @@ export function Wallet() {
         {/* Tab Content */}
         <div className="p-4 min-h-[300px]">
           {activeTab === 'coins' && address && (
-            <div className="space-y-3">
-              {/* MON Token */}
-              <div className="flex items-center justify-between p-4 bg-[#1a1a2e] rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
-                    <span className="text-white font-bold">M</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-white">MON</p>
-                    <p className="text-xs text-gray-400">Monad</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-white">
-                    {/* Balance shown above */}
-                  </p>
-                </div>
+            <div className="space-y-4">
+              <div className="text-center py-8 space-y-2">
+                <p className="text-gray-400 text-sm">Native Token</p>
+                <p className="text-2xl font-bold text-white">MON (Monad)</p>
+                <p className="text-sm text-gray-500">
+                  Balance displayed above
+                </p>
               </div>
-              <TokenList address={address} />
+              
+              <div className="border-t border-purple-500/20 pt-4">
+                <TokenList address={address} />
+              </div>
             </div>
           )}
 

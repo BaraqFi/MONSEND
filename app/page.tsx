@@ -6,23 +6,23 @@ const frame = {
   version: 'next',
   imageUrl: `${APP_URL}/images/feed.png`,
   button: {
-    title: 'Launch MONCAST',
+    title: 'Launch MONSEND',
     action: {
       type: 'launch_frame',
-      name: 'MONCAST',
+      name: 'MONSEND',
       url: APP_URL,
       splashImageUrl: `${APP_URL}/images/splash.png`,
-      splashBackgroundColor: '#f7f7f7',
+      splashBackgroundColor: '#16162e',
     },
   },
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'MONCAST',
+    title: 'MONSEND',
     openGraph: {
-      title: 'MONCAST',
-      description: 'Manage your MON tokens on Monad Testnet',
+      title: 'MONSEND',
+      description: 'Send and receive MON tokens on Monad Testnet',
     },
     other: {
       'fc:frame': JSON.stringify(frame),
