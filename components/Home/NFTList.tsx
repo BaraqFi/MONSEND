@@ -122,24 +122,6 @@ export function NFTList({ address }: { address: Address }) {
     return (
       <div className="space-y-3 py-8 text-center">
         <p className={`text-sm ${textSecondary}`}>No NFTs detected</p>
-        <div className={`space-y-1 text-xs ${textSecondary}`}>
-          <p>
-            To detect NFTs automatically, you'll need to add known NFT
-            contract addresses.
-          </p>
-          <p className="mt-2">
-            Or use{' '}
-            <a
-              href="https://info.monadscan.com/myapikey/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-400 hover:text-purple-300 underline"
-            >
-              MonadScan API
-            </a>{' '}
-            for automatic detection.
-          </p>
-        </div>
       </div>
     )
   }

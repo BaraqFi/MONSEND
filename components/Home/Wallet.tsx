@@ -58,7 +58,7 @@ export function Wallet() {
         className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}
       >
         <div
-          className={`w-full max-w-md space-y-4 rounded-xl p-6 text-center ${cardBg}`}
+          className={`w-full space-y-4 rounded-xl p-6 text-center ${cardBg}`}
         >
           <h2 className={`text-2xl font-bold ${textPrimary}`}>MONSEND</h2>
           <p className={`text-sm ${textSecondary}`}>
@@ -76,7 +76,7 @@ export function Wallet() {
       <div
         className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}
       >
-        <div className={`w-full max-w-md space-y-6 rounded-xl p-8 ${cardBg}`}>
+        <div className={`w-full space-y-6 rounded-xl p-8 ${cardBg}`}>
           <div className="text-center space-y-3">
             <div
               className="mx-auto flex h-20 w-20 items-center justify-center rounded-full"
@@ -109,7 +109,7 @@ export function Wallet() {
       <div
         className={`flex min-h-screen flex-col items-center justify-center p-4 ${bgColor}`}
       >
-        <div className={`w-full max-w-md space-y-6 rounded-xl p-6 ${cardBg}`}>
+        <div className={`w-full space-y-6 rounded-xl p-6 ${cardBg}`}>
           <div className="text-center space-y-2">
             <h1 className={`text-2xl font-bold ${textPrimary}`}>
               Wrong Network
