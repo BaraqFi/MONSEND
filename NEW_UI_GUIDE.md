@@ -29,23 +29,18 @@ Your MONSEND wallet has been completely redesigned with a sleek, modern interfac
 - **Bridge**: Coming soon (disabled)
 
 ### 5. **Tabbed Interface**
-Three main sections accessible via tabs:
+Two main sections accessible via tabs:
 
 #### 📊 Coins Tab
 - Shows MON balance
 - Displays all ERC-20 tokens you hold
-- Auto-refreshes every 30 seconds
+- Auto-refreshes every 10 seconds
 - Beautiful token cards with icons
 
-#### 🖼️ NFTs Tab
-- Displays your NFT collection
-- Grid layout for NFTs
-- Auto-refreshes every 60 seconds
-- Shows collection names
-
 #### 📜 Transactions Tab
-- Transaction history
+- Transaction history with local storage
 - Shows sent/received with indicators
+- Displays pending, confirmed, and failed transactions
 - Clickable to view on Monad Explorer
 - Auto-refreshes every 15 seconds
 
@@ -76,17 +71,27 @@ The main wallet component with:
 - Beautiful card layout
 - Auto-refresh functionality
 
-### `NFTList.tsx` (New)
-- Fetches NFT collections
-- Grid display
-- Shows collection info
-- Auto-refresh functionality
+### `SendTokens.tsx` (Updated)
+- Added transaction modal for real-time status updates
+- Now shows transaction progress with confirmation status
+- Stores transactions in local storage for history
+- Refreshes balance after sending
 
-### `TransactionHistory.tsx` (New)
-- Shows recent transactions
-- Sent/Received indicators
-- Clickable to explorer
-- Auto-refresh functionality
+### `TransactionHistory.tsx` (Updated)
+- Now uses local storage to track transactions
+- Shows pending, confirmed, and failed transaction statuses
+- Combines blockchain data with local transaction logs
+- Faster refresh rate (15 seconds)
+
+### `TransactionModal.tsx` (New)
+- Real-time transaction status monitoring
+- Shows transaction details and progress
+- Polls blockchain for confirmation status
+- Can be closed by tapping background or close button
+
+### `TokenList.tsx` (Updated)
+- Faster refresh rate (10 seconds)
+- Better synchronization with main dashboard balance
 
 ## 🎯 User Flow
 

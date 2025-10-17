@@ -36,3 +36,7 @@ yarn-error.log*
 next-env.d.ts
 
 .env
+
+NEW_UI_GUIDE.md*
+DATA_FETCHING_GUIDE.md*
+WALLET_README.md*

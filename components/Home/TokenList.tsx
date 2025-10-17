@@ -130,8 +130,8 @@ export function TokenList({ address, refreshTrigger }: TokenListProps) {
 
     fetchTokens()
 
-    // Refresh tokens every 30 seconds
-    const interval = setInterval(fetchTokens, 30000)
+    // Refresh tokens every 10 seconds (faster than before)
+    const interval = setInterval(fetchTokens, 10000)
     return () => clearInterval(interval)
   }, [address, refreshTrigger])
 

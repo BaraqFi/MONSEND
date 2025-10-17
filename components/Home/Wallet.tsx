@@ -14,7 +14,6 @@ import { useState } from 'react'
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 
 import { useFrame } from '@/components/farcaster-provider'
-import { NFTList } from '@/components/Home/NFTList'
 import { SendTokens } from '@/components/Home/SendTokens'
 import { TokenList } from '@/components/Home/TokenList'
 import { TransactionHistory } from '@/components/Home/TransactionHistory'
@@ -23,7 +22,7 @@ import { useTheme } from '@/components/theme-provider'
 import { monadTestnet } from '@/lib/viem'
 import { farcasterMiniApp as miniAppConnector } from '@farcaster/miniapp-wagmi-connector'
 
-type Tab = 'coins' | 'nfts' | 'transactions'
+type Tab = 'coins' | 'transactions'
 type Modal = 'send' | 'deposit' | null
 
 export function Wallet() {
@@ -285,20 +284,6 @@ export function Wallet() {
             <button
               type="button"
               className={`relative flex-1 py-4 text-sm font-semibold transition-colors ${
-                activeTab === 'nfts'
-                  ? 'text-purple-400'
-                  : `${textSecondary} hover:text-white`
-              }`}
-              onClick={() => setActiveTab('nfts')}
-            >
-              NFTs
-              {activeTab === 'nfts' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400" />
-              )}
-            </button>
-            <button
-              type="button"
-              className={`relative flex-1 py-4 text-sm font-semibold transition-colors ${
                 activeTab === 'transactions'
                   ? 'text-purple-400'
                   : `${textSecondary} hover:text-white`
@@ -321,8 +306,6 @@ export function Wallet() {
               refreshTrigger={balanceRefreshTrigger}
             />
           )}
-
-          {activeTab === 'nfts' && address && <NFTList address={address} />}
 
           {activeTab === 'transactions' && address && (
             <TransactionHistory address={address} />

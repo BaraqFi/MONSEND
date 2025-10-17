@@ -13,8 +13,46 @@ interface Transaction {
   to: Address | null
   value: bigint
   timestamp: number
-  blockNumber: bigint
+  blockNumber?: bigint
   type: 'sent' | 'received'
+  status?: 'pending' | 'confirmed' | 'failed'
+  tokenSymbol?: string
+  tokenAddress?: Address | 'native'
+}
+
+// Local storage key for transaction history
+const TRANSACTION_HISTORY_KEY = 'monsend_transaction_history'
+
+// Helper functions for local storage
+const getStoredTransactions = (address: Address): Transaction[] => {
+  try {
+    const stored = localStorage.getItem(`${TRANSACTION_HISTORY_KEY}_${address}`)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+const storeTransaction = (address: Address, transaction: Transaction) => {
+  try {
+    const stored = getStoredTransactions(address)
+    const updated = [transaction, ...stored.filter(tx => tx.hash !== transaction.hash)]
+    localStorage.setItem(`${TRANSACTION_HISTORY_KEY}_${address}`, JSON.stringify(updated))
+  } catch (error) {
+    console.error('Failed to store transaction:', error)
+  }
+}
+
+const updateTransactionStatus = (address: Address, hash: Hash, status: 'confirmed' | 'failed') => {
+  try {
+    const stored = getStoredTransactions(address)
+    const updated = stored.map(tx => 
+      tx.hash === hash ? { ...tx, status } : tx
+    )
+    localStorage.setItem(`${TRANSACTION_HISTORY_KEY}_${address}`, JSON.stringify(updated))
+  } catch (error) {
+    console.error('Failed to update transaction status:', error)
+  }
 }
 
 export function TransactionHistory({ address }: { address: Address }) {
@@ -27,22 +65,16 @@ export function TransactionHistory({ address }: { address: Address }) {
       setIsLoading(true)
 
       try {
-        // Get the latest block number
+        // Get stored transactions first
+        const storedTransactions = getStoredTransactions(address)
+        
+        // Get blockchain transactions
         const latestBlock = await publicClient.getBlockNumber()
-
-        // Fetch recent blocks (last 1000 blocks for better coverage)
-        const fromBlock =
-          latestBlock - BigInt(1000) > BigInt(0)
-            ? latestBlock - BigInt(1000)
-            : BigInt(0)
-
-        // Fetch blocks and extract transactions
+        const fromBlock = latestBlock - BigInt(1000) > BigInt(0) ? latestBlock - BigInt(1000) : BigInt(0)
+        
         const txs: Transaction[] = []
         const addressLower = address.toLowerCase()
-
-        // Scan through recent blocks to find transactions
-        // Note: This is resource-intensive. In production, use MonadScan API
-        const blocksToCheck = Math.min(Number(latestBlock - fromBlock), 50) // Limit to last 50 blocks
+        const blocksToCheck = Math.min(Number(latestBlock - fromBlock), 50)
 
         for (let i = 0; i < blocksToCheck; i++) {
           const blockNum = latestBlock - BigInt(i)
@@ -59,7 +91,6 @@ export function TransactionHistory({ address }: { address: Address }) {
                   const txFrom = tx.from?.toLowerCase()
                   const txTo = tx.to?.toLowerCase()
 
-                  // Check if transaction involves our address
                   if (txFrom === addressLower || txTo === addressLower) {
                     txs.push({
                       hash: tx.hash,
@@ -69,24 +100,41 @@ export function TransactionHistory({ address }: { address: Address }) {
                       timestamp: Number(block.timestamp),
                       blockNumber: block.number,
                       type: txFrom === addressLower ? 'sent' : 'received',
+                      status: 'confirmed',
+                      tokenSymbol: 'MON',
+                      tokenAddress: 'native',
                     })
                   }
                 }
               }
             }
           } catch (err) {
-            // Skip blocks that error
             console.error(`Failed to fetch block ${blockNum}:`, err)
           }
         }
 
-        // Sort by block number (newest first)
-        txs.sort((a, b) => Number(b.blockNumber - a.blockNumber))
+        // Combine stored and blockchain transactions, removing duplicates
+        const allTransactions = [...storedTransactions]
+        
+        for (const tx of txs) {
+          const exists = allTransactions.some(storedTx => storedTx.hash === tx.hash)
+          if (!exists) {
+            allTransactions.push(tx)
+          }
+        }
 
-        setTransactions(txs)
+        // Sort by timestamp (newest first)
+        allTransactions.sort((a, b) => {
+          if (a.status === 'pending' && b.status !== 'pending') return -1
+          if (b.status === 'pending' && a.status !== 'pending') return 1
+          return b.timestamp - a.timestamp
+        })
+
+        setTransactions(allTransactions)
       } catch (error) {
         console.error('Failed to fetch transactions:', error)
-        setTransactions([])
+        // Fallback to stored transactions only
+        setTransactions(getStoredTransactions(address))
       } finally {
         setIsLoading(false)
       }
@@ -94,15 +142,14 @@ export function TransactionHistory({ address }: { address: Address }) {
 
     fetchTransactions()
 
-    // Refresh every 30 seconds (slower to avoid rate limits)
-    const interval = setInterval(fetchTransactions, 30000)
+    // Refresh every 15 seconds (faster than before)
+    const interval = setInterval(fetchTransactions, 15000)
     return () => clearInterval(interval)
   }, [address])
 
   const cardBg = theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-white'
   const textPrimary = theme === 'dark' ? 'text-white' : 'text-gray-900'
-  const textSecondary =
-    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+  const textSecondary = theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
 
   if (isLoading) {
     return (
@@ -157,7 +204,7 @@ export function TransactionHistory({ address }: { address: Address }) {
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 tx.type === 'sent' ? 'bg-red-500/20' : 'bg-green-500/20'
-              }`}
+              } ${tx.status === 'pending' ? 'animate-pulse' : ''}`}
             >
               {tx.type === 'sent' ? (
                 <ArrowUpRight className="h-5 w-5 text-red-400" />
@@ -168,6 +215,12 @@ export function TransactionHistory({ address }: { address: Address }) {
             <div>
               <p className={`text-sm font-semibold ${textPrimary}`}>
                 {tx.type === 'sent' ? 'Sent' : 'Received'}
+                {tx.status === 'pending' && (
+                  <span className="ml-2 text-xs text-yellow-400">(Pending)</span>
+                )}
+                {tx.status === 'failed' && (
+                  <span className="ml-2 text-xs text-red-400">(Failed)</span>
+                )}
               </p>
               <p className={`text-xs ${textSecondary}`}>
                 {new Date(tx.timestamp * 1000).toLocaleString()}
@@ -181,7 +234,7 @@ export function TransactionHistory({ address }: { address: Address }) {
               }`}
             >
               {tx.type === 'sent' ? '-' : '+'}
-              {formatEther(tx.value)} MON
+              {formatEther(tx.value)} {tx.tokenSymbol || 'MON'}
             </p>
             <p className={`text-xs ${textSecondary}`}>
               {tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}
@@ -192,4 +245,7 @@ export function TransactionHistory({ address }: { address: Address }) {
     </div>
   )
 }
+
+// Export functions for use in other components
+export { storeTransaction, updateTransactionStatus }
 

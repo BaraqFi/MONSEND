@@ -8,6 +8,7 @@ import {
   parseUnits,
   type Address,
   formatUnits,
+  type Hash,
 } from 'viem'
 import {
   useAccount,
@@ -18,6 +19,7 @@ import {
 
 import { useTheme } from '@/components/theme-provider'
 import { monadTestnet, publicClient } from '@/lib/viem'
+import { TransactionModal } from './TransactionModal'
 
 interface SendTokensProps {
   onTransactionSuccess?: () => void
@@ -85,6 +87,8 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
   const [amount, setAmount] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [showTransactionModal, setShowTransactionModal] = useState(false)
+  const [currentTransactionHash, setCurrentTransactionHash] = useState<Hash | undefined>()
 
   const { address, chainId } = useAccount()
 
@@ -287,8 +291,9 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             value: parseEther(amount),
           },
           {
-            onSuccess: () => {
-              setIsSuccess(true)
+            onSuccess: (hash) => {
+              setCurrentTransactionHash(hash)
+              setShowTransactionModal(true)
               setRecipient('')
               setAmount('')
               onTransactionSuccess?.()
@@ -310,8 +315,9 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             args: [recipient as Address, amountInWei],
           },
           {
-            onSuccess: () => {
-              setIsSuccess(true)
+            onSuccess: (hash) => {
+              setCurrentTransactionHash(hash)
+              setShowTransactionModal(true)
               setRecipient('')
               setAmount('')
               onTransactionSuccess?.()
@@ -555,21 +561,22 @@ export function SendTokens({ onTransactionSuccess }: SendTokensProps) {
             {error}
           </div>
         )}
-
-        {isSuccess && hash && (
-          <div className="space-y-2 rounded-lg border border-green-500/50 bg-green-900/30 px-4 py-3 text-sm text-green-200">
-            <p className="font-semibold">Transaction sent successfully!</p>
-            <a
-              href={`${monadTestnet.blockExplorers.default.url}/tx/${hash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block text-purple-400 underline hover:text-purple-300"
-            >
-              View on Explorer →
-            </a>
-          </div>
-        )}
       </div>
+
+      {/* Transaction Modal */}
+      <TransactionModal
+        isOpen={showTransactionModal}
+        onClose={() => {
+          setShowTransactionModal(false)
+          setCurrentTransactionHash(undefined)
+        }}
+        transactionHash={currentTransactionHash}
+        fromAddress={address}
+        toAddress={recipient as Address}
+        amount={amount}
+        tokenSymbol={selectedToken?.symbol}
+        tokenAddress={selectedToken?.address}
+      />
     </div>
   )
 }
