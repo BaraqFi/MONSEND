@@ -33,10 +33,8 @@ A Farcaster Mini App for sending and receiving MON tokens on Monad Testnet.
 
 ## Environment Variables
 
-You mentioned you already set these up in step 2:
 
 ```bash
-NEXT_PUBLIC_URL=<your-url>
 NEXT_PUBLIC_MONAD_RPC_URL=<your-monad-rpc-url>
 NEXT_PUBLIC_MONAD_EXPLORER=<your-monad-explorer-url>
 ```
@@ -105,30 +103,7 @@ Enter your cloudflared URL and test your wallet app!
 - Clean, mobile-first UI
 - Disconnect functionality
 
-## Customization
 
-### Change Colors
-Edit Tailwind classes in the component files:
-- Primary button: `bg-blue-600 hover:bg-blue-700`
-- Secondary button: `bg-gray-600 hover:bg-gray-700`
-- Success: `bg-green-100 border-green-400`
-- Error: `bg-red-100 border-red-400`
-
-### Change Images
-Replace these files in `public/images/`:
-- `feed.png` - Embed image (3:2 ratio)
-- `splash.png` - App icon (200x200px)
-- `icon.png` - App icon
-
-### Add ERC-20 Token Support
-Extend `WalletBalance.tsx` to fetch ERC-20 balances using:
-```typescript
-const balance = await publicClient.readContract({
-  address: tokenAddress,
-  abi: erc20ABI,
-  functionName: 'balanceOf',
-  args: [userAddress],
-})
 ```
 
 ## Deployment
@@ -143,7 +118,6 @@ vercel
 ```
 
 Set environment variables in Vercel dashboard:
-- `NEXT_PUBLIC_URL` → Your Vercel deployment URL
 - `NEXT_PUBLIC_MONAD_RPC_URL` → Your Monad RPC endpoint
 - `NEXT_PUBLIC_MONAD_EXPLORER` → Monad Explorer URL
 
@@ -154,16 +128,6 @@ Set environment variables in Vercel dashboard:
 - [Viem Documentation](https://viem.sh/)
 - [Wagmi Documentation](https://wagmi.sh/)
 
-## Next Steps
-
-Consider adding:
-- Transaction history display
-- ERC-20 token support
-- QR code scanner for addresses
-- Address book functionality
-- Gas estimation
-- Transaction confirmation modals
-- Multi-send functionality
 
 Enjoy building! 🚀
 
